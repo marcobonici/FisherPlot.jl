@@ -5,24 +5,24 @@ using CairoMakie
 using Makie
 using Base: @kwdef
 
-function EllipseParametrization(a::Float64, b::Float64, θ::Float64)
+function ellipseparameterization(a::Float64, b::Float64, θ::Float64)
     t = LinRange(0,2π, 200)
     x = Array(a .* sin.(θ) .* cos.(t) + b .* cos.(θ) .* sin.(t))
     y = Array(a .* cos.(θ) .* cos.(t) - b .* sin.(θ) .* sin.(t))
     return x, y
 end
 
-function Gaussian(μ::Float64, σ::Float64, x)
+function gaussian(μ::Float64, σ::Float64, x)
     return 1/(sqrt(2π*σ^2))*exp(-0.5*(x-μ)^2/σ^2)
 end
 
-function EllipseParameters(covmatrix::Matrix{Float64}, i::Int64, j::Int64)
+function ellipseparameters(covmatrix::Matrix{Float64}, i::Int64, j::Int64)
     σi = sqrt(covmatrix[i,i])
     σj = sqrt(covmatrix[j,j])
     σij = covmatrix[i,j]
     θ = (atan(2σij,(σi^2-σj^2)))/2
     a = sqrt((σi^2+σj^2)/2+sqrt(((σi^2-σj^2)^2)/4+σij^2))
-    if i==j
+    if i == j
         b = 0.
     else
         b = sqrt((σi^2+σj^2)/2-sqrt(((σi^2-σj^2)^2)/4+σij^2))
@@ -30,7 +30,7 @@ function EllipseParameters(covmatrix::Matrix{Float64}, i::Int64, j::Int64)
     return σi, σj, a, b, θ
 end
 
-function PrepareCanvas(LaTeX_array, central_values, limits, ticks, probes, colors, PlotPars)
+function preparecanvas(LaTeX_array, limits, ticks, probes, colors, PlotPars::Dict)
     matrix_dim = length(LaTeX_array)
     #TODO: add the textsize to PlotPars
     figure = Makie.Figure(textsize = 40, font = PlotPars["font"])
@@ -90,16 +90,16 @@ function PrepareCanvas(LaTeX_array, central_values, limits, ticks, probes, color
     return figure
 end
 
-function DrawGaussian!(canvas, σ, i, central, color)
+function drawgaussian!(canvas, σ, i, central, color)
     ax = canvas[i,i]
     x = Array(LinRange(-4σ+central,4σ+central, 200))
-    Makie.lines!(ax, x, Gaussian.(central, σ, x)./Gaussian.(central, σ, central), color = color, linewidth = 4)
-    Makie.band!(ax, x, 0, Gaussian.(central, σ, x)./Gaussian.(central, σ, central) , color=(color, 0.2))
+    Makie.lines!(ax, x, gaussian.(central, σ, x)./gaussian.(central, σ, central), color = color, linewidth = 4)
+    Makie.band!(ax, x, 0, gaussian.(central, σ, x)./gaussian.(central, σ, central) , color=(color, 0.2))
     x = Array(LinRange(-σ+central,σ+central, 200))
-    Makie.band!(ax, x, 0, Gaussian.(central, σ, x)./Gaussian.(central, σ, central) , color=(color, 0.4))
+    Makie.band!(ax, x, 0, gaussian.(central, σ, x)./gaussian.(central, σ, central) , color=(color, 0.4))
 end
 
-function DrawEllipse!(canvas, i, j, x, y, central_values, color)
+function drawellipse!(canvas, i, j, x, y, central_values, color)
     ax = canvas[i,j]
     
     Makie.lines!(ax, x .+ central_values[j], y .+ central_values[i], color = color, linewidth = 4)
@@ -109,15 +109,15 @@ function DrawEllipse!(canvas, i, j, x, y, central_values, color)
     Makie.band!(ax, 3x .+ central_values[j], 0, 3y .+ central_values[i], color=(color, 0.2))
 end
 
-function PaintCorrMattrix!(canvas, central_values, corr_matrix, color)
+function paintcorrmatrix!(canvas, central_values, corr_matrix, color)
     for i in 1:length(central_values)
         for j in 1:i
             if i == j
-                DrawGaussian!(canvas, sqrt(corr_matrix[i,i]), i, central_values[i], color)
+                drawgaussian!(canvas, sqrt(corr_matrix[i,i]), i, central_values[i], color)
             else
-                σi, σj, a, b, θ = EllipseParameters(corr_matrix, i,j)
-                x,y = EllipseParametrization(a, b, θ)
-                DrawEllipse!(canvas, i, j, x, y, central_values, color)
+                σi, σj, a, b, θ = ellipseparameters(corr_matrix, i,j)
+                x,y = ellipseparameterization(a, b, θ)
+                drawellipse!(canvas, i, j, x, y, central_values, color)
             end
         end
     end
