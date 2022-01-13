@@ -10,4 +10,6 @@ Makie = "ee78f7c6-11fb-53f2-987a-cfe4a2b5a57a"
 
 [compat]
 LaTeXStrings = "1"
+Makie = "0.16"
+CairoMakie = "0.7"
 julia = "1.6"
