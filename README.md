@@ -48,3 +48,5 @@ which prepare a white canvas where we are going to paint our Fisher matrices con
 ```julia
 FisherPlot.PaintCorrMattrix!(canvas, central_values, correlation_matrix, "deepskyblue3")
 ```
+
+![contour](https://user-images.githubusercontent.com/58727599/149520029-93b71d32-db02-45bb-baab-4a17d7446160.png)
