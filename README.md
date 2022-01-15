@@ -46,7 +46,7 @@ canvas = FisherPlot.preparecanvas(LaTeX_array, limits, ticks, probes, colors, Pl
 ```
 which prepare a white canvas where we are going to paint our Fisher matrices contours. The last command (which must be repeated for each Fisher correlation matrix we want to plot) is:
 ```julia
-FisherPlot.PaintCorrMattrix!(canvas, central_values, correlation_matrix, "deepskyblue3")
+FisherPlot.paintcorrmatrix!(canvas, central_values, correlation_matrix, "deepskyblue3")
 ```
 
 ![contour](https://user-images.githubusercontent.com/58727599/149520029-93b71d32-db02-45bb-baab-4a17d7446160.png)
