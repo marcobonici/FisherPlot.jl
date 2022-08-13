@@ -33,7 +33,8 @@ end
 function preparecanvas(LaTeX_array, limits, ticks, probes, colors, PlotPars::Dict)
     matrix_dim = length(LaTeX_array)
     #TODO: add the textsize to PlotPars
-    figure = Makie.Figure(textsize = 40, font = PlotPars["font"])
+    figure = Makie.Figure(textsize = 40, font = PlotPars["font"],
+    backgroundcolor=PlotPars["backgroundcolor"])
     for i in 1:matrix_dim
         for j in 1:i
             if i == j
@@ -45,7 +46,8 @@ function preparecanvas(LaTeX_array, limits, ticks, probes, colors, PlotPars::Dic
                     ylabel = L"P/P_\mathrm{max}",ylabelsize = PlotPars["PPmaxlabelsize"], yticks = [0,1],
                     xticklabelrotation = PlotPars["xticklabelrotation"],
                     xticks = ([ticks[i,1], 0.5*(ticks[i,1]+ticks[i,2]), ticks[i,2]],
-                        [string(myi) for myi in round.([ticks[i,1], 0.5*(ticks[i,1]+ticks[i,2]), ticks[i,2]], sigdigits = 3)]))
+                        [string(myi) for myi in round.([ticks[i,1], 0.5*(ticks[i,1]+ticks[i,2]), ticks[i,2]], sigdigits = 3)]),
+                        backgroundcolor=PlotPars["backgroundcolor"])
                 Makie.ylims!(ax, (-0.0,1.05))
                 Makie.xlims!(ax, (limits[i,1],limits[i,2]))
                 Makie.hideydecorations!(ax, ticks = false, ticklabels = false, label = false)
@@ -64,7 +66,7 @@ function preparecanvas(LaTeX_array, limits, ticks, probes, colors, PlotPars::Dic
                         [string(myi) for myi in round.([ticks[i,1], 0.5*(ticks[i,1]+ticks[i,2]), ticks[i,2]], sigdigits = 3)]),
                     xticks = ([ticks[j,1], 0.5*(ticks[j,1]+ticks[j,2]), ticks[j,2]],
                         [string(myi) for myi in round.([ticks[j,1], 0.5*(ticks[j,1]+ticks[j,2]), ticks[j,2]], sigdigits = 3)]),
-                yticklabelpad=8)
+                yticklabelpad=8, backgroundcolor=PlotPars["backgroundcolor"])
                 Makie.ylims!(ax, (limits[i,1],limits[i,2]))
                 Makie.xlims!(ax, (limits[j,1],limits[j,2]))
                 if i == matrix_dim
@@ -78,7 +80,8 @@ function preparecanvas(LaTeX_array, limits, ticks, probes, colors, PlotPars::Dic
                     [PolyElement(color = color, strokecolor = color, strokewidth = 1) for color in colors],
                     probes,
                     tellheight = false, tellwidth = false, rowgap = 10,
-                    halign = :right, valign = :top, framecolor = :black, labelsize =55, patchsize = (70, 40), framevisible = true)
+                    halign = :right, valign = :top, framecolor = :black, labelsize =55, patchsize = (70, 40), framevisible = true,
+                    bgcolor=PlotPars["backgroundcolor"])
                 else
                     hideydecorations!(ax, ticks = true, ticklabels = true,  label = true)
                     ax.alignmode = Mixed(right = MakieLayout.Protrusion(0), bottom = MakieLayout.Protrusion(0), top = MakieLayout.Protrusion(0))
@@ -101,7 +104,7 @@ end
 
 function drawellipse!(canvas, i, j, x, y, central_values, color)
     ax = canvas[i,j]
-    
+
     Makie.lines!(ax, x .+ central_values[j], y .+ central_values[i], color = color, linewidth = 4)
     Makie.lines!(ax, 3x .+ central_values[j], 3y .+ central_values[i], color = color, linewidth = 4)
 
