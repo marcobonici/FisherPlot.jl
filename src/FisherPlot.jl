@@ -49,27 +49,23 @@ function preparecanvas(LaTeX_array, limits, ticks, probes, colors, PlotPars::Dic
                     xticklabelsize = PlotPars["dimticklabel"],
                     yticklabelsize = PlotPars["dimticklabel"], yaxisposition = (:right),
                     xlabel = L"%$((LaTeX_array)[i])", xlabelsize = PlotPars["parslabelsize"],
-                    ylabelsize = PlotPars["PPmaxlabelsize"], yticksize=10.,  yticks = [0,1], ylabel = L"P/P_\mathrm{max}",
+                    ylabelsize = PlotPars["PPmaxlabelsize"], spinewidth=3., xtickwidth = 3.0, ytickwidth = 3.0, xticksize=10., yticksize=10.,  yticks = [0,1], ylabel = L"P/P_\mathrm{max}",
                     xticklabelrotation = PlotPars["xticklabelrotation"],
                     xticks = ([ticks[i,1], 0.5*(ticks[i,1]+ticks[i,2]), ticks[i,2]],
                         [string(myi) for myi in round.([ticks[i,1], 0.5*(ticks[i,1]+ticks[i,2]), ticks[i,2]], sigdigits = 3)]),
                         backgroundcolor=PlotPars["backgroundcolor"], alignmode = Inside())
-                #colgap!(ga, 15)
-                #rowgap!(ga, 15)
                 Makie.ylims!(ax, (-0.0,1.05))
                 Makie.xlims!(ax, (limits[i,1],limits[i,2]))
                 Makie.hideydecorations!(ax, ticks = false, ticklabels = false, label = false)
 
-                ax.alignmode = Mixed(right = -95)#, bottom = 0, top= 0)
+                ax.alignmode = Mixed(right = -102)
                 if i != matrix_dim
-                    #ax.alignmode = Mixed(right = 0, bottom = 0, top= 0)
                     hidexdecorations!(ax, ticks = true, ticklabels = true,  label = true)
                 else
-                    #ax.alignmode = Mixed(right = 0, bottom = 0, top= 0)
                     hidexdecorations!(ax, ticks = false, ticklabels = false,  label = false)
                 end
             else
-                ax = Axis(ga[i,j], width = PlotPars["sidesquare"], height = PlotPars["sidesquare"],
+                ax = Axis(ga[i,j], width = PlotPars["sidesquare"], height = PlotPars["sidesquare"],spinewidth=3., xtickwidth = 3.0, ytickwidth = 3.0, xticksize=10., yticksize=10.,
                     xticklabelsize = PlotPars["dimticklabel"], yticklabelsize = PlotPars["dimticklabel"],
                     ylabel = L"%$(LaTeX_array[i])", xlabel = L"%$((LaTeX_array)[j])",
                     ylabelsize = PlotPars["parslabelsize"], xlabelsize = PlotPars["parslabelsize"], xticklabelrotation = PlotPars["xticklabelrotation"],
@@ -80,33 +76,25 @@ function preparecanvas(LaTeX_array, limits, ticks, probes, colors, PlotPars::Dic
                         yticklabelpad=8, backgroundcolor=PlotPars["backgroundcolor"], alignmode = Inside())
                 Makie.ylims!(ax, (limits[i,1],limits[i,2]))
                 Makie.xlims!(ax, (limits[j,1],limits[j,2]))
-                #ax.alignmode = Mixed(right = 0)
                 if i == matrix_dim
-                    #ax.alignmode = Mixed(right = 0, bottom = 0, top= 0)
                     hidexdecorations!(ax, ticks = false, ticklabels = false,  label = false)
                 else
-                    #ax.alignmode = Mixed(right = 0, bottom = 0, top= 0)
                     hidexdecorations!(ax, ticks = true, ticklabels = true,  label = true)
                 end
                 if j == 1
                     hideydecorations!(ax, ticks = false, ticklabels = false,  label = false)
                     Legend(ga[1,matrix_dim],
                     [PolyElement(color = color, strokecolor = color, strokewidth = 1) for color in colors],
-                    probes,
+                    probes, padding = PlotPars["legendpadding"], patchlabelgap = PlotPars["patchlabelgap"],
                     tellheight = false, tellwidth = false, rowgap = 0,
                     halign = :right, valign = :top, framecolor = :black, labelsize =PlotPars["legendsize"], patchsize = PlotPars["patchsize"], framevisible = true,
                     backgroundcolor=PlotPars["backgroundcolor"])
-                    #ax.alignmode = Mixed(right = 0, bottom = 0, top= 0)
                 else
                     hideydecorations!(ax, ticks = true, ticklabels = true,  label = true)
-                    #ax.alignmode = Mixed(right = 0., bottom = 0, top = 0)
                 end
             end
         end
     end
-    #colgap!(figure.layout, 10)
-    #rowgap!(figure.layout, 10)
-    #Makie.resize!(figure.scene, 600, 600)
     resize_to_layout!(figure)
     trim!(figure.layout)
     return figure
