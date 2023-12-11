@@ -1,7 +1,6 @@
 module FisherPlot
 
 using LaTeXStrings
-using CairoMakie
 using Makie
 using Base: @kwdef
 
@@ -34,31 +33,43 @@ function preparecanvas(LaTeX_array, limits, ticks, probes, colors, PlotPars::Dic
     matrix_dim = length(LaTeX_array)
     #TODO: add the textsize to PlotPars
     figure = Makie.Figure(textsize = 40, font = PlotPars["font"],
-    backgroundcolor=PlotPars["backgroundcolor"])
+        backgroundcolor=PlotPars["backgroundcolor"])
+    ga = figure[1, 1] = GridLayout()
+
+    titlelayout = GridLayout(figure[0, 1], halign = :center, tellwidth = false)
+
+    if haskey(PlotPars, "plottitle")
+        Label(titlelayout[1, 1], PlotPars["plottitle"], fontsize = PlotPars["plottitlesize"], halign = :center, font = PlotPars["plottitlefont"])
+    end
     for i in 1:matrix_dim
         for j in 1:i
             if i == j
-                ax = Axis(figure[i,i],
+                ax = Axis(ga[i,i],
                     width = PlotPars["sidesquare"], height = PlotPars["sidesquare"],
                     xticklabelsize = PlotPars["dimticklabel"],
                     yticklabelsize = PlotPars["dimticklabel"], yaxisposition = (:right),
                     xlabel = L"%$((LaTeX_array)[i])", xlabelsize = PlotPars["parslabelsize"],
-                    ylabel = L"P/P_\mathrm{max}",ylabelsize = PlotPars["PPmaxlabelsize"], yticks = [0,1],
+                    ylabelsize = PlotPars["PPmaxlabelsize"], yticksize=10.,  yticks = [0,1], ylabel = L"P/P_\mathrm{max}",
                     xticklabelrotation = PlotPars["xticklabelrotation"],
                     xticks = ([ticks[i,1], 0.5*(ticks[i,1]+ticks[i,2]), ticks[i,2]],
                         [string(myi) for myi in round.([ticks[i,1], 0.5*(ticks[i,1]+ticks[i,2]), ticks[i,2]], sigdigits = 3)]),
-                        backgroundcolor=PlotPars["backgroundcolor"])
+                        backgroundcolor=PlotPars["backgroundcolor"], alignmode = Inside())
+                #colgap!(ga, 15)
+                #rowgap!(ga, 15)
                 Makie.ylims!(ax, (-0.0,1.05))
                 Makie.xlims!(ax, (limits[i,1],limits[i,2]))
                 Makie.hideydecorations!(ax, ticks = false, ticklabels = false, label = false)
+
+                ax.alignmode = Mixed(right = -95)#, bottom = 0, top= 0)
                 if i != matrix_dim
-                    ax.alignmode = Mixed(right = MakieLayout.Protrusion(0), bottom = MakieLayout.Protrusion(0), top= MakieLayout.Protrusion(0))
+                    #ax.alignmode = Mixed(right = 0, bottom = 0, top= 0)
                     hidexdecorations!(ax, ticks = true, ticklabels = true,  label = true)
                 else
+                    #ax.alignmode = Mixed(right = 0, bottom = 0, top= 0)
                     hidexdecorations!(ax, ticks = false, ticklabels = false,  label = false)
                 end
             else
-                ax = Axis(figure[i,j], width = PlotPars["sidesquare"], height = PlotPars["sidesquare"],
+                ax = Axis(ga[i,j], width = PlotPars["sidesquare"], height = PlotPars["sidesquare"],
                     xticklabelsize = PlotPars["dimticklabel"], yticklabelsize = PlotPars["dimticklabel"],
                     ylabel = L"%$(LaTeX_array[i])", xlabel = L"%$((LaTeX_array)[j])",
                     ylabelsize = PlotPars["parslabelsize"], xlabelsize = PlotPars["parslabelsize"], xticklabelrotation = PlotPars["xticklabelrotation"],
@@ -66,30 +77,38 @@ function preparecanvas(LaTeX_array, limits, ticks, probes, colors, PlotPars::Dic
                         [string(myi) for myi in round.([ticks[i,1], 0.5*(ticks[i,1]+ticks[i,2]), ticks[i,2]], sigdigits = 3)]),
                     xticks = ([ticks[j,1], 0.5*(ticks[j,1]+ticks[j,2]), ticks[j,2]],
                         [string(myi) for myi in round.([ticks[j,1], 0.5*(ticks[j,1]+ticks[j,2]), ticks[j,2]], sigdigits = 3)]),
-                yticklabelpad=8, backgroundcolor=PlotPars["backgroundcolor"])
+                        yticklabelpad=8, backgroundcolor=PlotPars["backgroundcolor"], alignmode = Inside())
                 Makie.ylims!(ax, (limits[i,1],limits[i,2]))
                 Makie.xlims!(ax, (limits[j,1],limits[j,2]))
+                #ax.alignmode = Mixed(right = 0)
                 if i == matrix_dim
+                    #ax.alignmode = Mixed(right = 0, bottom = 0, top= 0)
                     hidexdecorations!(ax, ticks = false, ticklabels = false,  label = false)
                 else
+                    #ax.alignmode = Mixed(right = 0, bottom = 0, top= 0)
                     hidexdecorations!(ax, ticks = true, ticklabels = true,  label = true)
                 end
                 if j == 1
                     hideydecorations!(ax, ticks = false, ticklabels = false,  label = false)
-                    Legend(figure[1,matrix_dim],
+                    Legend(ga[1,matrix_dim],
                     [PolyElement(color = color, strokecolor = color, strokewidth = 1) for color in colors],
                     probes,
-                    tellheight = false, tellwidth = false, rowgap = 10,
-                    halign = :right, valign = :top, framecolor = :black, labelsize =55, patchsize = (70, 40), framevisible = true,
-                    bgcolor=PlotPars["backgroundcolor"])
+                    tellheight = false, tellwidth = false, rowgap = 0,
+                    halign = :right, valign = :top, framecolor = :black, labelsize =PlotPars["legendsize"], patchsize = PlotPars["patchsize"], framevisible = true,
+                    backgroundcolor=PlotPars["backgroundcolor"])
+                    #ax.alignmode = Mixed(right = 0, bottom = 0, top= 0)
                 else
                     hideydecorations!(ax, ticks = true, ticklabels = true,  label = true)
-                    ax.alignmode = Mixed(right = MakieLayout.Protrusion(0), bottom = MakieLayout.Protrusion(0), top = MakieLayout.Protrusion(0))
+                    #ax.alignmode = Mixed(right = 0., bottom = 0, top = 0)
                 end
             end
         end
     end
-    Makie.resize!(figure.scene, figure.layout.layoutobservables.reportedsize[]...)
+    #colgap!(figure.layout, 10)
+    #rowgap!(figure.layout, 10)
+    #Makie.resize!(figure.scene, 600, 600)
+    resize_to_layout!(figure)
+    trim!(figure.layout)
     return figure
 end
 
@@ -113,14 +132,15 @@ function drawellipse!(canvas, i, j, x, y, central_values, color)
 end
 
 function paintcorrmatrix!(canvas, central_values, corr_matrix, color)
+    ciccio = canvas[1,1]
     for i in 1:length(central_values)
         for j in 1:i
             if i == j
-                drawgaussian!(canvas, sqrt(corr_matrix[i,i]), i, central_values[i], color)
+                drawgaussian!(ciccio, sqrt(corr_matrix[i,i]), i, central_values[i], color)
             else
                 σi, σj, a, b, θ = ellipseparameters(corr_matrix, i,j)
                 x,y = ellipseparameterization(a, b, θ)
-                drawellipse!(canvas, i, j, x, y, central_values, color)
+                drawellipse!(ciccio, i, j, x, y, central_values, color)
             end
         end
     end

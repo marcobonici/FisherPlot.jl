@@ -1,15 +1,13 @@
 name = "FisherPlot"
 uuid = "a6a81055-8810-4a7f-bad9-3c67194ad2e1"
-authors = ["Marco Bonici <marco.bonici@ge.infn.it>"]
-version = "0.1.0"
+authors = ["Marco Bonici <bonici.marco@gmail.com>"]
+version = "0.1.1"
 
 [deps]
-CairoMakie = "13f3f980-e62b-5c42-98c6-ff1f3baf88f0"
 LaTeXStrings = "b964fa9f-0449-5b57-a5c2-d3ea65f4040f"
 Makie = "ee78f7c6-11fb-53f2-987a-cfe4a2b5a57a"
 
 [compat]
-CairoMakie = "0.7, 0.8, 0.9"
 LaTeXStrings = "1"
-Makie = "0.16, 0.17, 0.18"
+Makie = "0.20"
 julia = "1.6"
