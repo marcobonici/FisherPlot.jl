@@ -49,7 +49,7 @@ function preparecanvas(LaTeX_array, limits, ticks, probes, colors, PlotPars::Dic
                     xticklabelsize = PlotPars["dimticklabel"],
                     yticklabelsize = PlotPars["dimticklabel"], yaxisposition = (:right),
                     xlabel = L"%$((LaTeX_array)[i])", xlabelsize = PlotPars["parslabelsize"],
-                    ylabelsize = PlotPars["PPmaxlabelsize"], yticksize=10.,  yticks = [0,1], ylabel = L"P/P_\mathrm{max}",
+                    ylabelsize = PlotPars["PPmaxlabelsize"], spinewidth=3., xtickwidth = 3.0, ytickwidth = 3.0, xticksize=10., yticksize=10., yticks = [0,1], ylabel = L"P/P_\mathrm{max}",
                     xticklabelrotation = PlotPars["xticklabelrotation"],
                     xticks = ([ticks[i,1], 0.5*(ticks[i,1]+ticks[i,2]), ticks[i,2]],
                         [string(myi) for myi in round.([ticks[i,1], 0.5*(ticks[i,1]+ticks[i,2]), ticks[i,2]], sigdigits = 3)]),
@@ -60,19 +60,19 @@ function preparecanvas(LaTeX_array, limits, ticks, probes, colors, PlotPars::Dic
                 Makie.xlims!(ax, (limits[i,1],limits[i,2]))
                 Makie.hideydecorations!(ax, ticks = false, ticklabels = false, label = false)
 
-                ax.alignmode = Mixed(right = -95)#, bottom = 0, top= 0)
+                ax.alignmode = Mixed(right = -102.5)#, bottom = 0, top= 0)
                 if i != matrix_dim
-                    #ax.alignmode = Mixed(right = 0, bottom = 0, top= 0)
+                    ax.alignmode = Mixed(right = 0, bottom = 0, top= 0)
                     hidexdecorations!(ax, ticks = true, ticklabels = true,  label = true)
                 else
-                    #ax.alignmode = Mixed(right = 0, bottom = 0, top= 0)
+                    ax.alignmode = Mixed(right = 0, bottom = 0, top= 0)
                     hidexdecorations!(ax, ticks = false, ticklabels = false,  label = false)
                 end
             else
                 ax = Axis(ga[i,j], width = PlotPars["sidesquare"], height = PlotPars["sidesquare"],
                     xticklabelsize = PlotPars["dimticklabel"], yticklabelsize = PlotPars["dimticklabel"],
-                    ylabel = L"%$(LaTeX_array[i])", xlabel = L"%$((LaTeX_array)[j])",
-                    ylabelsize = PlotPars["parslabelsize"], xlabelsize = PlotPars["parslabelsize"], xticklabelrotation = PlotPars["xticklabelrotation"],
+                    ylabel = L"%$(LaTeX_array[i])", xlabel = L"%$((LaTeX_array)[j])", spinewidth=3.,
+                    ylabelsize = PlotPars["parslabelsize"], xtickwidth = 3.0, ytickwidth = 3.0, xticksize=10., yticksize=10., xlabelsize = PlotPars["parslabelsize"], xticklabelrotation = PlotPars["xticklabelrotation"],
                     yticks = ([ticks[i,1], 0.5*(ticks[i,1]+ticks[i,2]), ticks[i,2]],
                         [string(myi) for myi in round.([ticks[i,1], 0.5*(ticks[i,1]+ticks[i,2]), ticks[i,2]], sigdigits = 3)]),
                     xticks = ([ticks[j,1], 0.5*(ticks[j,1]+ticks[j,2]), ticks[j,2]],
@@ -92,8 +92,9 @@ function preparecanvas(LaTeX_array, limits, ticks, probes, colors, PlotPars::Dic
                     hideydecorations!(ax, ticks = false, ticklabels = false,  label = false)
                     Legend(ga[1,matrix_dim],
                     [PolyElement(color = color, strokecolor = color, strokewidth = 1) for color in colors],
-                    probes,
-                    tellheight = false, tellwidth = false, rowgap = 0,
+                    probes, padding = (50, 50, 20, 20),
+                    #tellheight = false, tellwidth = false,
+                    rowgap = 10, patchlabelgap = 30,
                     halign = :right, valign = :top, framecolor = :black, labelsize =PlotPars["legendsize"], patchsize = PlotPars["patchsize"], framevisible = true,
                     backgroundcolor=PlotPars["backgroundcolor"])
                     #ax.alignmode = Mixed(right = 0, bottom = 0, top= 0)
@@ -109,6 +110,8 @@ function preparecanvas(LaTeX_array, limits, ticks, probes, colors, PlotPars::Dic
     #Makie.resize!(figure.scene, 600, 600)
     resize_to_layout!(figure)
     trim!(figure.layout)
+    #colgap!(figure.layout, 200)
+    #rowgap!(figure.layout, 200)
     return figure
 end
 
